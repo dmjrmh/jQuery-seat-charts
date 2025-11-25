@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bed Booking Layout</title>
+    <link rel="stylesheet" href="jquery.seat-charts.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        
+        .wrapper {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 50px;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Custom Bed Styles */
+        div.seatCharts-seat {
+            color: #FFFFFF;
+            cursor: pointer;
+            margin: 5px;
+            border-radius: 5px;
+            font-weight: bold;
+            line-height: 30px;
+            text-align: center;
+            height: 30px;
+            width: 50px;
+        }
+
+        /* Available Bed */
+        div.seatCharts-seat.available {
+            background-color: #95a5a6;
+        }
+
+        /* Selected Bed */
+        div.seatCharts-seat.focused {
+            background-color: #2ecc71;
+            border: none;
+        }
+
+        div.seatCharts-seat.selected {
+            background-color: #2ecc71;
+        }
+
+        /* Unavailable/Booked Bed */
+        div.seatCharts-seat.unavailable {
+            background-color: #e74c3c;
+            cursor: not-allowed;
+        }
+
+        /* Row labels */
+        .seatCharts-row {
+            height: 40px;
+        }
+        
+        /* Legend styling */
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .legend-box {
+            width: 30px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        .booking-details {
+            width: 200px;
+            text-align: left;
+        }
+        #selected-seats {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            list-style: none;
+            padding: 0;
+        }
+        #selected-seats li {
+            background: #f8f9fa;
+            margin-bottom: 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border-left: 4px solid #2ecc71;
+        }
+
+        /* Layout Sections */
+        .map-section {
+            padding: 10px;
+            /* border: 2px solid #333; */ /* Removed border */
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .upper-deck {
+            /* border-bottom: none; */
+            /* border-radius: 10px 10px 0 0; */
+            /* border-radius: 0; */
+            /* border-bottom: 2px solid #333; */
+        }
+
+        .lower-deck {
+            /* border-top: none; */
+            /* border-radius: 0 0 50px 50px; */
+            /* border: 2px solid #333; */
+            /* border-top: none; */
+            margin-top: -2px; 
+        }
+        
+        /* Center line simulation */
+        .seatCharts-container {
+            border-right: 1px dashed #ccc; /* Helper to see center? No, let's keep it clean */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="container">
+            <h2>Bed Map</h2>
+            
+            <div class="map-section upper-deck">
+                <div id="seat-map-upper"></div>
+            </div>
+            
+            <div class="map-section lower-deck">
+                <div id="seat-map-lower"></div>
+            </div>
+
+        </div>
+
+        <div class="booking-details">
+            <h2>Details</h2>
+            <h3>Selected Beds (<span id="counter">0</span>):</h3>
+            <ul id="selected-seats"></ul>
+            
+            <div id="legend"></div>
+        </div>
+    </div>
+
+    <!-- jQuery and Seat Charts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="jquery.seat-charts.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var cart = $('#selected-seats');
+            var counter = $('#counter');
+            var totalSelected = 0;
+
+            // Shared Click Handler
+            var clickHandler = function () {
+                if (this.status() == 'available') {
+                    //let's create a new <li> which we'll add to the cart items
+                    // IMPORTANT: We must use this.settings.id which contains the full ID including prefix
+                    $('<li>'+this.data().category+' #'+this.settings.label+': <b>$'+this.data().price+'</b> <a href="#" class="cancel-cart-item">[cancel]</a></li>')
+                        .attr('id', 'cart-item-'+this.settings.id)
+                        .data('seatId', this.settings.id)
+                        .appendTo(cart);
+                    
+                    //update counter
+                    totalSelected++;
+                    counter.text(totalSelected);
+                    
+                    return 'selected';
+                } else if (this.status() == 'selected') {
+                    //update the counter
+                    totalSelected--;
+                    counter.text(totalSelected);
+                    
+                    //remove the item from our cart
+                    $('#cart-item-'+this.settings.id).remove();
+                    
+                    //seat has been vacated
+                    return 'available';
+                } else if (this.status() == 'unavailable') {
+                    //seat has been already booked
+                    return 'unavailable';
+                } else {
+                    return this.style();
+                }
+            };
+
+            // Upper Deck (4 Rows)
+            var sc1 = $('#seat-map-upper').seatCharts({
+                map: [
+                    'a_a', 
+                    'a_a', 
+                    'a_a', 
+                    'a_a'
+                ],
+                seats: {
+                    a: { price: 100, classes: 'first-class', category: 'Bed' }
+                },
+                naming : {
+                    top : false,
+                    getLabel : function (character, row, column) {
+                        var suffix = column == 1 ? 'A' : 'B';
+                        return row + suffix; 
+                    },
+                    getId : function(character, row, column) {
+                        return 'upper_' + row + '_' + column;
+                    }
+                },
+                legend : {
+                    node : $('#legend'),
+                    items : [
+                        [ 'a', 'available',   'Available' ],
+                        [ 'a', 'unavailable', 'Booked' ],
+                        [ 'a', 'selected',    'Selected' ]
+                    ]
+                },
+                click: clickHandler
+            });
+
+            // Lower Deck (3 Rows)
+            var sc2 = $('#seat-map-lower').seatCharts({
+                map: [
+                    'a_a', 
+                    'a_a', 
+                    'a_a'
+                ],
+                seats: {
+                    a: { price: 100, classes: 'economy-class', category: 'Bed' }
+                },
+                naming : {
+                    top : false,
+                    getLabel : function (character, row, column) {
+                        var suffix = column == 1 ? 'A' : 'B';
+                        return (row + 4) + suffix; 
+                    },
+                    getId : function(character, row, column) {
+                        return 'lower_' + row + '_' + column;
+                    }
+                },
+                click: clickHandler
+            });
+
+            // Handle cancel link
+            $('body').on('click', '.cancel-cart-item', function (e) {
+                e.preventDefault(); // Prevent default anchor behavior
+                var $item = $(this).parents('li:first');
+                var seatId = $item.data('seatId');
+                
+                console.log('Cancelling seat:', seatId); // Debugging
+
+                // Check which map the seat belongs to and update status
+                // We need to check if the seat exists in the map before trying to update it
+                // to avoid errors if something is out of sync
+                if(seatId.startsWith('upper_')) {
+                    sc1.status(seatId, 'available');
+                } else if (seatId.startsWith('lower_')) {
+                    sc2.status(seatId, 'available');
+                }
+
+                $item.remove();
+                
+                // Recalculate total based on actual selected items to be safe
+                // or just decrement safely
+                totalSelected = Math.max(0, totalSelected - 1);
+                counter.text(totalSelected);
+            });
+
+            // Example: Make some beds unavailable (Booked)
+            // IDs are prefixed: upper_row_col or lower_row_col
+            // Columns are 1 and 3 (since map is a_a)
+            sc1.get(['upper_1_1', 'upper_4_3']).status('unavailable');
+            sc2.get(['lower_1_1']).status('unavailable');
+
+        });
+    </script>
+</body>
+</html>
