@@ -2,14 +2,14 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bed Booking Layout</title>
-  <link rel="stylesheet" href="jquery.seat-charts.css">
+  <link rel="stylesheet" href="jquery.seat-charts.css" />
   <style>
     body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #f0f2f5;
+      font-family: "Roboto", sans-serif;
+      background-color: #ffffff;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -19,77 +19,109 @@
 
     .wrapper {
       background: white;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      /* padding: 40px; */
+      /* border-radius: 12px; */
+      /* box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); */
       display: flex;
       gap: 50px;
+      /* width: 100%; */
+      align-items: flex-start;
     }
 
-    .container {
+    .map-container {
       text-align: center;
+      padding-right: 40px;
+      border-right: 2px dotted #ccc;
     }
 
     h2 {
       margin-bottom: 20px;
       color: #333;
+      font-size: 18px;
+      text-align: left;
     }
 
     /* Custom Bed Styles */
     div.seatCharts-seat {
-      color: #FFFFFF;
+      color: #ffffff;
       cursor: pointer;
       margin: 5px;
       border-radius: 5px;
-      font-weight: bold;
-      line-height: 30px;
+      font-weight: normal;
+      line-height: 35px;
       text-align: center;
-      height: 30px;
-      width: 50px;
+      height: 35px;
+      width: 35px;
+      font-size: 14px;
     }
 
     /* Available Bed */
     div.seatCharts-seat.available {
-      background-color: #95a5a6;
+      background-color: #2ECC71;
+    }
+
+    /* Booked Bed */
+    div.seatCharts-seat.booked {
+      background-color: #e2241a;
+      cursor: not-allowed;
+    }
+
+    /* Unavailable Bed */
+    div.seatCharts-seat.unavailable {
+      background-color: #a0a6a7;
+      cursor: not-allowed;
     }
 
     /* Selected Bed */
     div.seatCharts-seat.focused {
-      background-color: #2ecc71;
+      background-color: #76b474;
       border: none;
-    }
-
-    div.seatCharts-seat.selected {
-      background-color: #2ecc71;
-    }
-
-    /* Unavailable/Booked Bed */
-    div.seatCharts-seat.unavailable {
-      background-color: #e74c3c;
-      cursor: not-allowed;
     }
 
     /* Row labels */
     .seatCharts-row {
-      height: 40px;
+      height: 45px;
+    }
+
+    /* Row Label Text */
+    .seatCharts-cell.seatCharts-space {
+      color: #333;
+      font-weight: bold;
+      padding-top: 10px;
+      /* Align with seats */
     }
 
     /* Legend styling */
-    .legend-item {
+    .seatCharts-legendList {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .seatCharts-legendItem {
       display: flex;
       align-items: center;
       margin-bottom: 10px;
+      line-height: 20px;
+      /* Reset line-height */
+      clear: both;
+      /* Ensure no float issues */
     }
 
-    .legend-box {
-      width: 30px;
+    /* The box inside the legend */
+    .seatCharts-legendItem .seatCharts-seat {
+      float: none;
+      /* Override default float */
+      margin: 0 10px 0 0;
+      /* Spacing between box and text */
+      width: 20px;
       height: 20px;
-      margin-right: 10px;
-      border-radius: 3px;
+      line-height: 20px;
+      cursor: default;
     }
 
     .booking-details {
-      width: 200px;
+      width: 250px;
       text-align: left;
     }
 
@@ -102,199 +134,147 @@
     }
 
     #selected-seats li {
-      background: #f8f9fa;
+      /* background: #f8f9fa; */
       margin-bottom: 5px;
+      /* padding: 5px 10px; */
+      /* border-radius: 4px; */
+      /* border-left: 4px solid #2ecc71; */
+      font-size: 14px;
+    }
+
+    .checkout-button {
+      background-color: #e6e6e6;
+      border: 1px solid #999;
       padding: 5px 10px;
-      border-radius: 4px;
-      border-left: 4px solid #2ecc71;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 3px;
     }
 
-    /* Layout Sections */
-    .map-section {
+    /* Front Indicator */
+    .front-indicator {
+      background-color: #f2f2f2;
+      color: #adadad;
       padding: 10px;
-      /* border: 2px solid #333; */
-      /* Removed border */
-      margin-bottom: 10px;
-      position: relative;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      font-weight: bold;
     }
 
-    .upper-deck {
-      /* border-bottom: none; */
-      /* border-radius: 10px 10px 0 0; */
-      /* border-radius: 0; */
-      /* border-bottom: 2px solid #333; */
+    #legend {
+      margin-top: 50px;
     }
 
-    .lower-deck {
-      /* border-top: none; */
-      /* border-radius: 0 0 50px 50px; */
-      /* border: 2px solid #333; */
-      /* border-top: none; */
-      margin-top: -2px;
-    }
-
-    /* Center line simulation */
-    .seatCharts-container {
-      border-right: 1px dashed #ccc;
-      /* Helper to see center? No, let's keep it clean */
+    .seatCharts-cell {
+      width: 35px;
+      /* Match seat width for alignment */
     }
   </style>
 </head>
 
 <body>
-
   <div class="wrapper">
-    <div class="container">
-      <h2>Bed Map</h2>
-
-      <div class="map-section upper-deck">
-        <div id="seat-map-upper"></div>
+    <div class="map-container">
+      <div id="seat-map">
+        <div class="front-indicator">Front</div>
       </div>
-
-      <div class="map-section lower-deck">
-        <div id="seat-map-lower"></div>
-      </div>
-
     </div>
 
     <div class="booking-details">
-      <h2>Details</h2>
-      <h3>Selected Beds (<span id="counter">0</span>):</h3>
+      <h2>Booking Details</h2>
+      <div style="margin-bottom: 10px;"><b>Selected Seats (<span id="counter">0</span>):</b></div>
+      <button class="checkout-button">Checkout &raquo;</button>
       <ul id="selected-seats"></ul>
-
       <div id="legend"></div>
     </div>
   </div>
-
-  <!-- jQuery and Seat Charts -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="jquery.seat-charts.min.js"></script>
 
   <script>
+    var firstSeatLabel = 1;
     $(document).ready(function () {
-      var cart = $('#selected-seats');
-      var counter = $('#counter');
-      var totalSelected = 0;
-
-      // Shared Click Handler
-      var clickHandler = function () {
-        if (this.status() == 'available') {
-          //let's create a new <li> which we'll add to the cart items
-          // IMPORTANT: We must use this.settings.id which contains the full ID including prefix
-          $('<li>' + this.data().category + ' #' + this.settings.label + ': <b>$' + this.data().price + '</b> <a href="#" class="cancel-cart-item">[cancel]</a></li>')
-            .attr('id', 'cart-item-' + this.settings.id)
-            .data('seatId', this.settings.id)
-            .appendTo(cart);
-
-          //update counter
-          totalSelected++;
-          counter.text(totalSelected);
-
-          return 'selected';
-        } else if (this.status() == 'selected') {
-          //update the counter
-          totalSelected--;
-          counter.text(totalSelected);
-
-          //remove the item from our cart
-          $('#cart-item-' + this.settings.id).remove();
-
-          //seat has been vacated
-          return 'available';
-        } else if (this.status() == 'unavailable') {
-          //seat has been already booked
-          return 'unavailable';
-        } else {
-          return this.style();
-        }
-      };
-
-      // Upper Deck (4 Rows)
-      var sc1 = $('#seat-map-upper').seatCharts({
-        map: [
-          'a_a',
-          'a_a',
-          'a_a',
-          'a_a'
-        ],
-        seats: {
-          a: { price: 100, classes: 'first-class', category: 'Bed' }
-        },
-        naming: {
-          top: false,
-          getLabel: function (character, row, column) {
-            var suffix = column == 1 ? 'A' : 'B';
-            return row + suffix;
+      var $cart = $("#selected-seats"),
+        $counter = $("#counter"),
+        sc = $("#seat-map").seatCharts({
+          map: [
+            "fu_fu",
+            "fu_fu",
+            "eu_eu",
+            "eu_eu",
+            "_____",
+            "eu_eu",
+            "eu_eu",
+            "eu_eu",
+          ],
+          seats: {
+            f: {
+              classes: "available",
+              category: "Available",
+            },
+            e: {
+              classes: "booked",
+              category: "Already Booked",
+            },
+            u: {
+              classes: "unavailable",
+              category: "Not Available",
+            }
           },
-          getId: function (character, row, column) {
-            return 'upper_' + row + '_' + column;
-          }
-        },
-        legend: {
-          node: $('#legend'),
-          items: [
-            ['a', 'available', 'Available'],
-            ['a', 'unavailable', 'Booked'],
-            ['a', 'selected', 'Selected']
-          ]
-        },
-        click: clickHandler
-      });
-
-      // Lower Deck (3 Rows)
-      var sc2 = $('#seat-map-lower').seatCharts({
-        map: [
-          'a_a',
-          'a_a',
-          'a_a'
-        ],
-        seats: {
-          a: { price: 100, classes: 'economy-class', category: 'Bed' }
-        },
-        naming: {
-          top: false,
-          getLabel: function (character, row, column) {
-            var suffix = column == 1 ? 'A' : 'B';
-            return (row + 4) + suffix;
+          naming: {
+            top: false,
+            getLabel: function (character, row, column) {
+              return firstSeatLabel++;
+            },
           },
-          getId: function (character, row, column) {
-            return 'lower_' + row + '_' + column;
-          }
-        },
-        click: clickHandler
+          legend: {
+            node: $("#legend"),
+            items: [
+              ["f", "available", "Available"],
+              ["e", "booked", "Already Booked"],
+              ["u", "unavailable", "Not Available"],
+            ],
+          },
+          click: function () {
+            if (this.status() == "available") {
+              //let's create a new <li> which we'll add to the cart items
+              $(
+                "<li>" +
+                this.data().category +
+                " Seat # " +
+                this.settings.label +
+                ': <a href="#" class="cancel-cart-item">[cancel]</a></li>'
+              )
+                .attr("id", "cart-item-" + this.settings.id)
+                .data("seatId", this.settings.id)
+                .appendTo($cart);
+
+              $counter.text(sc.find("selected").length + 1);
+              return "selected";
+            } else if (this.status() == "selected") {
+              //update the counter
+              $counter.text(sc.find("selected").length - 1);
+              //remove the item from our cart
+              $("#cart-item-" + this.settings.id).remove();
+              //seat has been vacated
+              return "available";
+            } else if (this.status() == "booked" || this.status() == "unavailable") {
+              //seat has been already booked
+              return this.style();
+            } else {
+              return this.style();
+            }
+          },
+        });
+      //this will handle "[cancel]" link clicks
+      $("#selected-seats").on("click", ".cancel-cart-item", function () {
+        //let's just trigger Click event on the appropriate seat, so we don't have to repeat the logic here
+        sc.get($(this).parents("li:first").data("seatId")).click();
       });
 
-      // Handle cancel link
-      $('body').on('click', '.cancel-cart-item', function (e) {
-        e.preventDefault(); // Prevent default anchor behavior
-        var $item = $(this).parents('li:first');
-        var seatId = $item.data('seatId');
-
-        console.log('Cancelling seat:', seatId); // Debugging
-
-        // Check which map the seat belongs to and update status
-        // We need to check if the seat exists in the map before trying to update it
-        // to avoid errors if something is out of sync
-        if (seatId.startsWith('upper_')) {
-          sc1.status(seatId, 'available');
-        } else if (seatId.startsWith('lower_')) {
-          sc2.status(seatId, 'available');
-        }
-
-        $item.remove();
-
-        // Recalculate total based on actual selected items to be safe
-        // or just decrement safely
-        totalSelected = Math.max(0, totalSelected - 1);
-        counter.text(totalSelected);
-      });
-
-      // Example: Make some beds unavailable (Booked)
-      // IDs are prefixed: upper_row_col or lower_row_col
-      // Columns are 1 and 3 (since map is a_a)
-      sc1.get(['upper_1_1', 'upper_4_3']).status('unavailable');
-      sc2.get(['lower_1_1']).status('unavailable');
-
+      // Make 'e' (Already Booked) and 'u' (Not Available) seats unavailable/booked status so they can't be clicked
+      sc.find('e').status('booked');
+      sc.find('u').status('unavailable');
     });
   </script>
 </body>

@@ -43,7 +43,7 @@ div.seatCharts-row:after {
 }
 
 div.seatCharts-seat.selected {
-	background-color: aqua;
+	background-color: #e6b218;
 }
 
 div.seatCharts-seat.focused {
@@ -51,11 +51,16 @@ div.seatCharts-seat.focused {
 }
 
 div.seatCharts-seat.available {
-	background-color: green;
+	background-color: #2ECC71;
+}
+
+div.seatCharts-seat.booked {
+	background-color: #e2241a;
+	cursor: not-allowed;
 }
 
 div.seatCharts-seat.unavailable {
-	background-color: red;
+	background-color: #a0a6a7;
 	cursor: not-allowed;
 }
 
