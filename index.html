@@ -242,7 +242,13 @@
 						naming: {
 							top: false,
 							getLabel: function (character, row, column) {
-								return firstSeatLabel++;
+								if (this.status === "available") {
+									return "Available - " + this.settings.data.category;
+								} else if (this.status === "booked") {
+									return "Booked";
+								} else {
+									return "R" + (row + 1) + "C" + (column + 1);
+								}
 							},
 						},
 						legend: {
